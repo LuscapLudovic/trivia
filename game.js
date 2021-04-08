@@ -18,9 +18,6 @@ exports.Player = class {
  */
 exports.Game = function(isTechno = false) {
     let players          = [];
-    let places           = new Array(6);
-    let purses           = new Array(6);
-    let inPenaltyBox     = new Array(6);
 
     let popQuestions     = [];
     let scienceQuestions = [];
@@ -29,7 +26,6 @@ exports.Game = function(isTechno = false) {
     let technoQuestions = [];
 
     let currentPlayer    = 0;
-    let isGettingOutOfPenaltyBox = false;
 
     let didPlayerWin = function(){
         return !(players[currentPlayer].gold === 6)
@@ -44,7 +40,7 @@ exports.Game = function(isTechno = false) {
         // the number of theme of questions
         let nbTypeQuestions = 4;
 
-        switch (places[currentPlayer] % nbTypeQuestions) {
+        switch (players[currentPlayer].place % nbTypeQuestions) {
             case 0:
                 return 'Pop';
             case 1:
