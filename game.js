@@ -6,6 +6,8 @@ exports.Player = class {
     bonusGold = 0;
     place = 0;
     isOnPrison = false;
+    casierJudiciaire = 0;
+
     isPresent = true;
     hasJoker = true;
     hasWin = false;
@@ -165,7 +167,7 @@ exports.Game = function(isTechno = false) {
      */
     this.roll = function(roll){
         if (players[currentPlayer].isPresent && !players[currentPlayer].hasWin) {
-
+            console.log("------------------------------------------------------------");
             console.log(players[currentPlayer].name + " is the current player");
 
 
@@ -174,9 +176,10 @@ exports.Game = function(isTechno = false) {
 
                 // Verification for the prison Statut of the player
                 if(players[currentPlayer].isOnPrison){
-                    if(roll % 2 !== 0){
+                    let chance = Math.floor(Math.random()*players[currentPlayer].casierJudiciaire) + 1;
+                    console.log("--------chance : " + chance);
+                    if( chance === 1){
                         players[currentPlayer].isOnPrison = false;
-
                         this.move(roll);
                     }else{
                         console.log(players[currentPlayer].name + " is not getting out of the penalty box");
@@ -263,6 +266,7 @@ exports.Game = function(isTechno = false) {
         nextQuestion = selectCategory();
         players[currentPlayer].isOnPrison = true;
         players[currentPlayer].bonusGold = 0;
+        players[currentPlayer].casierJudiciaire++;
         this.nextPlayer();
     };
 
