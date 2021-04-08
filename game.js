@@ -8,6 +8,7 @@ exports.Player = class {
     isOnPrison = false;
     isPresent = true;
     hasJoker = true;
+    hasWin = false;
 
     constructor(name) {
         this.name = name;
@@ -30,6 +31,7 @@ exports.Game = function(isTechno = false) {
 
     let currentPlayer    = 0;
 
+    let winners = [];
     let winner = false;
     let goldToWin;
 
@@ -141,7 +143,7 @@ exports.Game = function(isTechno = false) {
      * @param roll the value of the dice
      */
     this.roll = function(roll){
-        if (players[currentPlayer].isPresent) {
+        if (players[currentPlayer].isPresent && !players[currentPlayer].hasWin) {
 
             console.log(players[currentPlayer].name + " is the current player");
 
@@ -215,8 +217,12 @@ exports.Game = function(isTechno = false) {
 
             if (winner) {
                 console.log(players[currentPlayer].name + " has won !!!! ")
+                players[currentPlayer].hasWin = true;
+                winners.push(players[currentPlayer]);
+                if (winners.length !== 3 && winners.length !== players.length) {
+                    winner = false;
+                }
             }
-
             this.nextPlayer();
 
             return winner;
@@ -242,6 +248,14 @@ exports.Game = function(isTechno = false) {
         if(currentPlayer === players.length)
             currentPlayer = 0;
 
+    }
+
+    this.showLeaderboard = function () {
+        console.log(winners);
+        console.log("--------- Leaderboard ---------")
+        winners.forEach((winner, index) => {
+            console.log((index + 1) + "- " + winner.name);
+        })
     }
 
 };
@@ -292,6 +306,8 @@ setTimeout(() => {
             }
 
         }while(!game.hasWinner());
+
+        game.showLeaderboard();
 
     } else {
         console.log("Le nombre de joueur est incorrect, il doit etre compris entre 2 et 6.");
