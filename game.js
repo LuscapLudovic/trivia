@@ -178,14 +178,19 @@ game.add('Chet');
 game.add('Pat');
 game.add('Sue');
 
-do{
+if (game.isPlayable()) {
+    do{
 
-    game.roll(Math.floor(Math.random()*6) + 1);
+        game.roll(Math.floor(Math.random()*6) + 1);
 
-    if(Math.floor(Math.random()*10) == 7){
-        notAWinner = game.wrongAnswer();
-    }else{
-        notAWinner = game.wasCorrectlyAnswered();
-    }
+        if(Math.floor(Math.random()*10) == 7){
+            notAWinner = game.wrongAnswer();
+        }else{
+            notAWinner = game.wasCorrectlyAnswered();
+        }
 
-}while(notAWinner);
+    }while(notAWinner);
+
+} else {
+    console.log("Le nombre de joueur est incorrect, il doit etre compris entre 2 et 6.");
+}
