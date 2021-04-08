@@ -31,6 +31,7 @@ exports.Game = function(isTechno = false) {
     let currentPlayer    = 0;
 
     let winner = false;
+    let goldToWin;
 
     let didPlayerWin = function(){
         return (players[currentPlayer].gold >= goldToWin)
@@ -271,10 +272,8 @@ setTimeout(() => {
     }
 
     players.forEach((player) => {
-        game.add(player);
-    })
-
-
+        game.add(player)
+    });
 
 // if the game is playable
     if (game.isPlayable()) {
