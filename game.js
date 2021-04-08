@@ -27,6 +27,7 @@ exports.Game = function(isTechno = false) {
     let sportsQuestions  = [];
     let rockQuestions    = [];
     let technoQuestions = [];
+    let nextQuestion = -1;
 
     let currentPlayer    = 0;
 
@@ -78,6 +79,24 @@ exports.Game = function(isTechno = false) {
         }
     };
 
+    let selectCategory = function(){
+        do{
+            input = prompt("Selectionner une catégorie : \n 1 - Pop \n 2 - Science \n 3 - Sports \n 4 - Techno/Rock");
+        }while(input <= 1 && input >= 4)
+        switch (input) {
+            case "1":
+                return 'Pop';
+            case "2":
+                return 'Science';
+            case "3":
+                return 'Sports';
+            case "4":
+                return (isTechno) ? 'Techno' : 'Rock';
+            default:
+                return selectCategory();
+        }
+    }
+
     // generate all question for each theme used in this game
     for(let i = 0; i < 50; i++){
         popQuestions.push("Pop Question "+i);
@@ -118,7 +137,8 @@ exports.Game = function(isTechno = false) {
 
     // Print the current question
     let askQuestion = function(){
-        switch (currentCategory()) {
+        let category = (nextQuestion === -1) ? currentCategory() : nextQuestion
+        switch (category) {
             case 'Pop':
                 console.log(popQuestions.shift());
                 break;
@@ -134,6 +154,7 @@ exports.Game = function(isTechno = false) {
             case "Techno":
                 console.log(technoQuestions.shift());
         }
+        nextQuestion = -1
     };
 
     /**
@@ -190,9 +211,9 @@ exports.Game = function(isTechno = false) {
         if(players[currentPlayer].place > 11){
             players[currentPlayer].place -= - 12;
         }
-
+        let category = (nextQuestion === -1) ? currentCategory() : nextQuestion
         console.log(players[currentPlayer].name + "'s new location is " + players[currentPlayer].place);
-        console.log("The category is " + currentCategory());
+        console.log("The category is " + category);
         askQuestion();
     }
 
@@ -229,6 +250,7 @@ exports.Game = function(isTechno = false) {
     this.wrongAnswer = function(){
         console.log('Question was incorrectly answered');
         console.log(players[currentPlayer].name + " was sent to the penalty box");
+        nextQuestion = selectCategory();
         players[currentPlayer].isOnPrison = true;
         players[currentPlayer].bonusGold = 0;
         this.nextPlayer();
