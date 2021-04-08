@@ -1,5 +1,10 @@
 exports = typeof window !== "undefined" && window !== null ? window : global;
 
+/**
+ * setup a game
+ * @param isTechno if the theme selected is 'Techno' else it's the 'Rock' theme
+ * @constructor
+ */
 exports.Game = function(isTechno = false) {
     let players          = [];
     let places           = new Array(6);
@@ -19,8 +24,13 @@ exports.Game = function(isTechno = false) {
         return !(purses[currentPlayer] === 6)
     };
 
+    /**
+     * Return the theme of the question ask to the current player
+     * @returns {string} the theme of the question
+     */
     let currentCategory = function(){
 
+        // the number of theme of questions
         let nbTypeQuestions = 4;
 
         switch (places[currentPlayer] % nbTypeQuestions) {
@@ -35,6 +45,7 @@ exports.Game = function(isTechno = false) {
         }
     };
 
+    // generate all question for each theme used in this game
     for(let i = 0; i < 50; i++){
         popQuestions.push("Pop Question "+i);
         scienceQuestions.push("Science Question "+i);
@@ -46,6 +57,10 @@ exports.Game = function(isTechno = false) {
         }
     }
 
+    /**
+     * Return if the game respect the constraint to launch a game
+     * @returns {boolean} if constraints is correct
+     */
     this.isPlayable = function(){
         let numberPlayers = this.howManyPlayers()
         return numberPlayers >= 2 && numberPlayers <=6;
@@ -63,11 +78,15 @@ exports.Game = function(isTechno = false) {
         return true;
     };
 
+    /**
+     * Return the number of players
+     * @returns {number} number of players
+     */
     this.howManyPlayers = function(){
         return players.length;
     };
 
-
+    // Print the current question
     let askQuestion = function(){
         switch (currentCategory()) {
             case 'Pop':
@@ -178,18 +197,22 @@ var notAWinner = false;
 
 let input;
 
+// while the user didn't input the selected theme
 do{
+    // ask to the user to input the selected theme
     input = prompt("Voulez-vous choisir la catégorie Rock ou Techno ?");
 }while(input.toLowerCase() !== "Rock".toLowerCase() && input.toLowerCase() !== "Techno".toLowerCase())
 
 let isTechno = (input.toLowerCase() === 'techno')
-var game = new Game(isTechno);
+
+let game = new Game(isTechno);
 
 game.add('Chet');
 game.add('Pat');
 game.add('Sue');
 
-if (game.isPlayable(game.howManyPlayers())) {
+// if the game is playable
+if (game.isPlayable()) {
     do{
 
         game.roll(Math.floor(Math.random()*6) + 1);
