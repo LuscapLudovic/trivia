@@ -185,17 +185,21 @@ exports.Game = function(isTechno = false) {
                     this.move(roll)
                 }
 
-                // management of the joker
-                if (players[currentPlayer].hasJoker && confirm("Voulez-vous utiliser votre joker")) {
-                    console.log("Le joker a été utilisé");
-                    players[currentPlayer].hasJoker = false;
-                    winner = this.wasCorrectlyAnswered(false);
-                } else {
-                    if(launchDice() === 7){
-                        this.wrongAnswer();
-                    }else{
-                        winner = this.wasCorrectlyAnswered(true);
+                if(!players[currentPlayer].isOnPrison) {
+                    // management of the joker
+                    if (players[currentPlayer].hasJoker && confirm("Voulez-vous utiliser votre joker")) {
+                        console.log("Le joker a été utilisé");
+                        players[currentPlayer].hasJoker = false;
+                        winner = this.wasCorrectlyAnswered(false);
+                    } else {
+                        if(launchDice() === 7){
+                            this.wrongAnswer();
+                        }else{
+                            winner = this.wasCorrectlyAnswered(true);
+                        }
                     }
+                }else {
+                    this.nextPlayer();
                 }
 
             } else {
