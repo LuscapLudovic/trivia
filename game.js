@@ -3,6 +3,7 @@ exports = typeof window !== "undefined" && window !== null ? window : global;
 exports.Player = class {
     name;
     gold = 0;
+    bonusGold = 0;
     place = 0;
     isOnPrison = false;
     isPresent = true;
@@ -135,13 +136,20 @@ exports.Game = function(isTechno = false) {
         }
     };
 
+    /**
+     * A turn for a player
+     * @param roll the value of the dice
+     */
     this.roll = function(roll){
         if (players[currentPlayer].isPresent) {
 
             console.log(players[currentPlayer].name + " is the current player");
+
+
             if (confirm('Voulez-vous continuer a jouer ?')) {
                 console.log("They have rolled a " + roll);
 
+                // Verification for the prison Statut of the player
                 if(players[currentPlayer].isOnPrison){
                     if(roll % 2 !== 0){
                         players[currentPlayer].isOnPrison = false;
@@ -154,7 +162,9 @@ exports.Game = function(isTechno = false) {
                     this.move(roll)
                 }
 
+                // management of the joker
                 if (players[currentPlayer].hasJoker && confirm("Voulez-vous utiliser votre joker")) {
+                    console.log("Le joker a été utilisé");
                     players[currentPlayer].hasJoker = false;
                     winner = this.wasCorrectlyAnswered(false);
                 } else {
@@ -193,12 +203,12 @@ exports.Game = function(isTechno = false) {
         } else {
             console.log('Answer was correct!!!!');
             if (earnGold) {
-                players[currentPlayer].gold += 1;
+                players[currentPlayer].gold += players[currentPlayer].bonusGold++ + 1;
                 console.log(players[currentPlayer].name + " now has " +
                     players[currentPlayer].gold  + " Gold Coins.");
-
             } else {
                 console.log("no gold win");
+                players[currentPlayer].bonusGold = 0;
             }
 
             let winner = didPlayerWin();
@@ -213,14 +223,20 @@ exports.Game = function(isTechno = false) {
         }
     };
 
+    /**
+     * When the user has the wrong anwser
+     */
     this.wrongAnswer = function(){
         console.log('Question was incorrectly answered');
         console.log(players[currentPlayer].name + " was sent to the penalty box");
         players[currentPlayer].isOnPrison = true;
-
+        players[currentPlayer].bonusGold = 0;
         this.nextPlayer();
     };
 
+    /**
+     * Go to the next player
+     */
     this.nextPlayer = function() {
         currentPlayer += 1;
         if(currentPlayer === players.length)
@@ -237,10 +253,18 @@ setTimeout(() => {
 
      // while the user didn't enter necessary gold to win
     do{
+<<<<<<< HEAD
         // ask to the user to input the number of gold 
         inputGold = prompt("Entrez le nombre de gold nécessaire (minimum 6)");
         parseInt(inputGold);
     }while(inputGold < 6 )
+=======
+        // ask to the user to input the number of gold
+        input = prompt("Entrez le nombre de gold nécessaire (minimum 6)");
+    }while(input < 6 )
+
+    let goldToWin = input
+>>>>>>> f1a9119005180e76924a5cef2ec164129d37343d
 
     // while the user didn't input the selected theme
     do{
@@ -250,8 +274,13 @@ setTimeout(() => {
 
     let isTechno = (input.toLowerCase() === 'techno')
 
+<<<<<<< HEAD
     let game = new exports.Game(isTechno);
     game.setGoldToWin(inputGold)
+=======
+    let game = new Game(isTechno);
+
+>>>>>>> f1a9119005180e76924a5cef2ec164129d37343d
     let names = ["Chet", "Pat", "Sue", "Pierre", "Paul", "Jacques", "Jean", "Tom"];
     let players = [];
     for (let i=0; i < 3 ; i++) {
@@ -261,8 +290,7 @@ setTimeout(() => {
 
     players.forEach((player) => {
         game.add(player)
-    })
-    
+    });
 
 // if the game is playable
     if (game.isPlayable()) {
