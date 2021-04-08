@@ -5,6 +5,7 @@ exports.Player = class {
     gold = 0;
     place = 0;
     isOnPrison = false;
+    isPresent = true;
 
     constructor(name) {
         this.name = name;
@@ -27,9 +28,27 @@ exports.Game = function(isTechno = false) {
 
     let currentPlayer    = 0;
 
+    let winner = false;
+
     let didPlayerWin = function(){
-        return !(players[currentPlayer].gold === 6)
+        return (players[currentPlayer].gold === 6)
     };
+
+    this.hasWinner = function () {
+        return winner;
+    }
+
+    this.playersIsPresent = function() {
+        let aPlayerIsPresent = false;
+        players.forEach((player) => {
+            if (player.isPresent) aPlayerIsPresent = true;
+        });
+        return aPlayerIsPresent;
+    }
+
+    let launchDice = function() {
+        return Math.floor(Math.random()*10);
+    }
 
     /**
      * Return the theme of the question ask to the current player
@@ -111,19 +130,37 @@ exports.Game = function(isTechno = false) {
     };
 
     this.roll = function(roll){
-        console.log(players[currentPlayer].name + " is the current player");
-        console.log("They have rolled a " + roll);
+        if (players[currentPlayer].isPresent) {
 
-        if(players[currentPlayer].isOnPrison){
-            if(roll % 2 != 0){
-                players[currentPlayer].isOnPrison = false;
+            console.log(players[currentPlayer].name + " is the current player");
+            if (confirm('Voulez-vous continuer a jouer ?')) {
+                console.log("They have rolled a " + roll);
 
-                this.move(roll);
-            }else{
-                console.log(players[currentPlayer].name + " is not getting out of the penalty box");
+                if(players[currentPlayer].isOnPrison){
+                    if(roll % 2 !== 0){
+                        players[currentPlayer].isOnPrison = false;
+
+                        this.move(roll);
+                    }else{
+                        console.log(players[currentPlayer].name + " is not getting out of the penalty box");
+                    }
+                }else{
+                    this.move(roll)
+                }
+
+                if(launchDice() === 7){
+                    this.wrongAnswer();
+                }else{
+                    winner = this.wasCorrectlyAnswered();
+                }
+
+            } else {
+                console.log(players[currentPlayer].name + " stop playing");
+                players[currentPlayer].isPresent = false;
             }
-        }else{
-            this.move(roll)
+
+        } else {
+            this.nextPlayer();
         }
     };
 
@@ -141,7 +178,7 @@ exports.Game = function(isTechno = false) {
     this.wasCorrectlyAnswered = function(){
         if(players[currentPlayer].isOnPrison) {
             this.nextPlayer();
-            return true;
+            return false;
         } else {
             console.log('Answer was correct!!!!');
             players[currentPlayer].gold += 1;
@@ -150,7 +187,7 @@ exports.Game = function(isTechno = false) {
 
             let winner = didPlayerWin();
 
-            if (!winner) {
+            if (winner) {
                 console.log(players[currentPlayer].name + " has won !!!! ")
             }
 
@@ -166,8 +203,6 @@ exports.Game = function(isTechno = false) {
         players[currentPlayer].isOnPrison = true;
 
         this.nextPlayer();
-
-        return true;
     };
 
     this.nextPlayer = function() {
@@ -179,45 +214,45 @@ exports.Game = function(isTechno = false) {
 
 };
 
-let notAWinner = false;
-
 let input;
 
-// while the user didn't input the selected theme
-do{
-    // ask to the user to input the selected theme
-    input = prompt("Voulez-vous choisir la catégorie Rock ou Techno ?");
-}while(input.toLowerCase() !== "Rock".toLowerCase() && input.toLowerCase() !== "Techno".toLowerCase())
+setTimeout(() => {
+    // while the user didn't input the selected theme
+    do{
+        // ask to the user to input the selected theme
+        input = prompt("Voulez-vous choisir la catégorie Rock ou Techno ?");
+    }while(input.toLowerCase() !== "Rock".toLowerCase() && input.toLowerCase() !== "Techno".toLowerCase())
 
-let isTechno = (input.toLowerCase() === 'techno')
+    let isTechno = (input.toLowerCase() === 'techno')
 
-let game = new Game(isTechno);
+    let game = new exports.Game(isTechno);
 
-let names = ["Chet", "Pat", "Sue", "Pierre", "Paul", "Jacques", "Jean", "Tom"];
-let players = [];
-for (let i=0; i < 3 ; i++) {
-    let player = new Player(names[i]);
-    players.push(player);
-}
+    let names = ["Chet", "Pat", "Sue", "Pierre", "Paul", "Jacques", "Jean", "Tom"];
+    let players = [];
+    for (let i=0; i < 3 ; i++) {
+        let player = new Player(names[i]);
+        players.push(player);
+    }
 
-players.forEach( (player) => {
-    game.add(player);
-})
+    players.forEach( (player) => {
+        game.add(player);
+    })
 
 // if the game is playable
-if (game.isPlayable()) {
-    do{
+    if (game.isPlayable()) {
+        do{
 
-        game.roll(Math.floor(Math.random()*6) + 1);
+            if (game.playersIsPresent()){
+                game.roll(Math.floor(Math.random()*6) + 1);
+            } else {
+                console.log("All players has left the game.");
+                break;
+            }
 
-        if(Math.floor(Math.random()*10) === 7){
-            notAWinner = game.wrongAnswer();
-        }else{
-            notAWinner = game.wasCorrectlyAnswered();
-        }
+        }while(!game.hasWinner());
 
-    }while(notAWinner);
+    } else {
+        console.log("Le nombre de joueur est incorrect, il doit etre compris entre 2 et 6.");
+    }
+}, 100);
 
-} else {
-    console.log("Le nombre de joueur est incorrect, il doit etre compris entre 2 et 6.");
-}
