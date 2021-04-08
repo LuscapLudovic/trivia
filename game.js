@@ -6,6 +6,7 @@ exports.Player = class {
     place = 0;
     isOnPrison = false;
     isPresent = true;
+    hasJoker = true;
 
     constructor(name) {
         this.name = name;
@@ -148,10 +149,15 @@ exports.Game = function(isTechno = false) {
                     this.move(roll)
                 }
 
-                if(launchDice() === 7){
-                    this.wrongAnswer();
-                }else{
-                    winner = this.wasCorrectlyAnswered();
+                if (players[currentPlayer].hasJoker && confirm("Voulez-vous utiliser votre joker")) {
+                    players[currentPlayer].hasJoker = false;
+                    winner = this.wasCorrectlyAnswered(false);
+                } else {
+                    if(launchDice() === 7){
+                        this.wrongAnswer();
+                    }else{
+                        winner = this.wasCorrectlyAnswered(true);
+                    }
                 }
 
             } else {
@@ -175,15 +181,20 @@ exports.Game = function(isTechno = false) {
         askQuestion();
     }
 
-    this.wasCorrectlyAnswered = function(){
+    this.wasCorrectlyAnswered = function(earnGold = true){
         if(players[currentPlayer].isOnPrison) {
             this.nextPlayer();
             return false;
         } else {
             console.log('Answer was correct!!!!');
-            players[currentPlayer].gold += 1;
-            console.log(players[currentPlayer].name + " now has " +
-                players[currentPlayer].gold  + " Gold Coins.");
+            if (earnGold) {
+                players[currentPlayer].gold += 1;
+                console.log(players[currentPlayer].name + " now has " +
+                    players[currentPlayer].gold  + " Gold Coins.");
+
+            } else {
+                console.log("no gold win");
+            }
 
             let winner = didPlayerWin();
 
