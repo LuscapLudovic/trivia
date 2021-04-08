@@ -32,7 +32,7 @@ exports.Game = function(isTechno = false) {
     let winner = false;
 
     let didPlayerWin = function(){
-        return (players[currentPlayer].gold === 6)
+        return (players[currentPlayer].gold === goldToWin)
     };
 
     this.hasWinner = function () {
@@ -228,6 +228,15 @@ exports.Game = function(isTechno = false) {
 let input;
 
 setTimeout(() => {
+
+     // while the user didn't enter necessary gold to win
+    do{
+        // ask to the user to input the number of gold 
+        input = prompt("Entrez le nombre de gold nécessaire (minimum 6)");
+    }while(input < 6 )
+
+    let goldToWin = input
+
     // while the user didn't input the selected theme
     do{
         // ask to the user to input the selected theme
@@ -245,9 +254,7 @@ setTimeout(() => {
         players.push(player);
     }
 
-    players.forEach( (player) => {
-        game.add(player);
-    })
+    
 
 // if the game is playable
     if (game.isPlayable()) {
