@@ -1,55 +1,50 @@
 exports = typeof window !== "undefined" && window !== null ? window : global;
 
-exports.Game = function() {
-    var players          = new Array();
-    var places           = new Array(6);
-    var purses           = new Array(6);
-    var inPenaltyBox     = new Array(6);
+exports.Game = function(isTechno = false) {
+    let players          = [];
+    let places           = new Array(6);
+    let purses           = new Array(6);
+    let inPenaltyBox     = new Array(6);
 
-    var popQuestions     = new Array();
-    var scienceQuestions = new Array();
-    var sportsQuestions  = new Array();
-    var rockQuestions    = new Array();
+    let popQuestions     = [];
+    let scienceQuestions = [];
+    let sportsQuestions  = [];
+    let rockQuestions    = [];
+    let technoQuestions = [];
 
-    var currentPlayer    = 0;
-    var isGettingOutOfPenaltyBox = false;
+    let currentPlayer    = 0;
+    let isGettingOutOfPenaltyBox = false;
 
-    var didPlayerWin = function(){
-        return !(purses[currentPlayer] == 6)
+    let didPlayerWin = function(){
+        return !(purses[currentPlayer] === 6)
     };
 
-    var currentCategory = function(){
-        if(places[currentPlayer] == 0)
-            return 'Pop';
-        if(places[currentPlayer] == 4)
-            return 'Pop';
-        if(places[currentPlayer] == 8)
-            return 'Pop';
-        if(places[currentPlayer] == 1)
-            return 'Science';
-        if(places[currentPlayer] == 5)
-            return 'Science';
-        if(places[currentPlayer] == 9)
-            return 'Science';
-        if(places[currentPlayer] == 2)
-            return 'Sports';
-        if(places[currentPlayer] == 6)
-            return 'Sports';
-        if(places[currentPlayer] == 10)
-            return 'Sports';
-        return 'Rock';
+    let currentCategory = function(){
+
+        let nbTypeQuestions = 4;
+
+        switch (places[currentPlayer] % nbTypeQuestions) {
+            case 0:
+                return 'Pop';
+            case 1:
+                return 'Science';
+            case 2:
+                return 'Sports';
+            default :
+                return (isTechno) ? 'Techno' : 'Rock';
+        }
     };
 
-    this.createRockQuestion = function(index){
-        return "Rock Question "+index;
-    };
-
-    for(var i = 0; i < 50; i++){
+    for(let i = 0; i < 50; i++){
         popQuestions.push("Pop Question "+i);
         scienceQuestions.push("Science Question "+i);
         sportsQuestions.push("Sports Question "+i);
-        rockQuestions.push(this.createRockQuestion(i));
-    };
+        if (isTechno) {
+            technoQuestions.push("Techno Question "+i);
+        }else {
+            rockQuestions.push("Rock Question "+i);
+        }
+    }
 
     this.isPlayable = function(){
         let numberPlayers = this.howManyPlayers()
@@ -73,15 +68,23 @@ exports.Game = function() {
     };
 
 
-    var askQuestion = function(){
-        if(currentCategory() == 'Pop')
-            console.log(popQuestions.shift());
-        if(currentCategory() == 'Science')
-            console.log(scienceQuestions.shift());
-        if(currentCategory() == 'Sports')
-            console.log(sportsQuestions.shift());
-        if(currentCategory() == 'Rock')
-            console.log(rockQuestions.shift());
+    let askQuestion = function(){
+        switch (currentCategory()) {
+            case 'Pop':
+                console.log(popQuestions.shift());
+                break;
+            case 'Science':
+                console.log(scienceQuestions.shift());
+                break;
+            case 'Sports':
+                console.log(sportsQuestions.shift());
+                break;
+            case "Rock":
+                console.log(rockQuestions.shift());
+                break;
+            case "Techno":
+                console.log(technoQuestions.shift());
+        }
     };
 
     this.roll = function(roll){
@@ -173,7 +176,14 @@ exports.Game = function() {
 
 var notAWinner = false;
 
-var game = new Game();
+let input;
+
+do{
+    input = prompt("Voulez-vous choisir la catégorie Rock ou Techno ?");
+}while(input.toLowerCase() !== "Rock".toLowerCase() && input.toLowerCase() !== "Techno".toLowerCase())
+
+let isTechno = (input.toLowerCase() === 'techno')
+var game = new Game(isTechno);
 
 game.add('Chet');
 game.add('Pat');
