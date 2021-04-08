@@ -25,11 +25,11 @@ exports.Player = class {
 exports.Game = function(isTechno = false) {
     let players          = [];
 
-    let popQuestions     = [];
-    let scienceQuestions = [];
-    let sportsQuestions  = [];
-    let rockQuestions    = [];
-    let technoQuestions = [];
+    let popQuestions     = 0;
+    let scienceQuestions = 0;
+    let sportsQuestions  = 0;
+    let rockQuestions    = 0;
+    let technoQuestions = 0;
     let nextQuestion = -1;
 
     let currentPlayer    = 0;
@@ -101,18 +101,6 @@ exports.Game = function(isTechno = false) {
         }
     }
 
-    // generate all question for each theme used in this game
-    for(let i = 0; i < 50; i++){
-        popQuestions.push("Pop Question "+i);
-        scienceQuestions.push("Science Question "+i);
-        sportsQuestions.push("Sports Question "+i);
-        if (isTechno) {
-            technoQuestions.push("Techno Question "+i);
-        }else {
-            rockQuestions.push("Rock Question "+i);
-        }
-    }
-
     /**
      * Return if the game respect the constraint to launch a game
      * @returns {boolean} if constraints is correct
@@ -144,19 +132,19 @@ exports.Game = function(isTechno = false) {
         let category = (nextQuestion === -1) ? currentCategory() : nextQuestion
         switch (category) {
             case 'Pop':
-                console.log(popQuestions.shift());
+                console.log('Pop Question ' + ++popQuestions);
                 break;
             case 'Science':
-                console.log(scienceQuestions.shift());
+                console.log('Science Question ' + ++scienceQuestions);
                 break;
             case 'Sports':
-                console.log(sportsQuestions.shift());
+                console.log('Sports Question ' + ++sportsQuestions);
                 break;
             case "Rock":
-                console.log(rockQuestions.shift());
+                console.log('Rock Question ' + ++rockQuestions);
                 break;
             case "Techno":
-                console.log(technoQuestions.shift());
+                console.log('Techno Question ' + ++technoQuestions);
         }
         nextQuestion = -1
     };
