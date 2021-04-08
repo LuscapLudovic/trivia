@@ -298,37 +298,45 @@ setTimeout(() => {
 
     let isTechno = (input.toLowerCase() === 'techno')
 
-    let game = new exports.Game(isTechno);
-    game.setGoldToWin(inputGold)
+    let replay;
+    do {
 
-    let names = ["Chet", "Pat", "Sue", "Pierre", "Paul", "Jacques", "Jean", "Tom"];
-    let players = [];
-    for (let i=0; i < 3 ; i++) {
-        let player = new Player(names[i]);
-        players.push(player);
-    }
+        let game = new exports.Game(isTechno);
+        game.setGoldToWin(inputGold)
 
-    players.forEach((player) => {
-        game.add(player)
-    });
+        let names = ["Chet", "Pat", "Sue", "Pierre", "Paul", "Jacques", "Jean", "Tom"];
+        let players = [];
+        for (let i=0; i < 3 ; i++) {
+            let player = new Player(names[i]);
+            players.push(player);
+        }
+
+        players.forEach((player) => {
+            game.add(player)
+        });
 
 // if the game is playable
-    if (game.isPlayable()) {
-        do{
+        if (game.isPlayable()) {
+            do{
 
-            if (game.playersIsPresent()){
-                game.roll(Math.floor(Math.random()*6) + 1);
-            } else {
-                console.log("All players has left the game.");
-                break;
-            }
+                if (game.playersIsPresent()){
+                    game.roll(Math.floor(Math.random()*6) + 1);
+                } else {
+                    console.log("All players has left the game.");
+                    break;
+                }
 
-        }while(!game.hasWinner());
+            }while(!game.hasWinner());
 
-        game.showLeaderboard();
+            game.showLeaderboard();
 
-    } else {
-        console.log("Le nombre de joueur est incorrect, il doit etre compris entre 2 et 6.");
-    }
+        } else {
+            console.log("Le nombre de joueur est incorrect, il doit etre compris entre 2 et 6.");
+        }
+
+        replay = confirm("Rejouez ?");
+
+    }while(replay);
+
 }, 100);
 
