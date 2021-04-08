@@ -253,18 +253,10 @@ setTimeout(() => {
 
      // while the user didn't enter necessary gold to win
     do{
-<<<<<<< HEAD
-        // ask to the user to input the number of gold 
+        // ask to the user to input the number of gold
         inputGold = prompt("Entrez le nombre de gold nécessaire (minimum 6)");
         parseInt(inputGold);
     }while(inputGold < 6 )
-=======
-        // ask to the user to input the number of gold
-        input = prompt("Entrez le nombre de gold nécessaire (minimum 6)");
-    }while(input < 6 )
-
-    let goldToWin = input
->>>>>>> f1a9119005180e76924a5cef2ec164129d37343d
 
     // while the user didn't input the selected theme
     do{
@@ -274,13 +266,9 @@ setTimeout(() => {
 
     let isTechno = (input.toLowerCase() === 'techno')
 
-<<<<<<< HEAD
     let game = new exports.Game(isTechno);
     game.setGoldToWin(inputGold)
-=======
-    let game = new Game(isTechno);
 
->>>>>>> f1a9119005180e76924a5cef2ec164129d37343d
     let names = ["Chet", "Pat", "Sue", "Pierre", "Paul", "Jacques", "Jean", "Tom"];
     let players = [];
     for (let i=0; i < 3 ; i++) {
