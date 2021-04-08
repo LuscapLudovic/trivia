@@ -1,5 +1,16 @@
 exports = typeof window !== "undefined" && window !== null ? window : global;
 
+exports.Player = class {
+    name;
+    gold = 0;
+    place = 0;
+    isOnPrison = false;
+
+    constructor(name) {
+        this.name = name;
+    }
+}
+
 /**
  * setup a game
  * @param isTechno if the theme selected is 'Techno' else it's the 'Rock' theme
@@ -21,7 +32,7 @@ exports.Game = function(isTechno = false) {
     let isGettingOutOfPenaltyBox = false;
 
     let didPlayerWin = function(){
-        return !(purses[currentPlayer] === 6)
+        return !(players[currentPlayer].gold === 6)
     };
 
     /**
@@ -66,13 +77,10 @@ exports.Game = function(isTechno = false) {
         return numberPlayers >= 2 && numberPlayers <=6;
     };
 
-    this.add = function(playerName){
-        players.push(playerName);
-        places[this.howManyPlayers() - 1] = 0;
-        purses[this.howManyPlayers() - 1] = 0;
-        inPenaltyBox[this.howManyPlayers() - 1] = false;
+    this.add = function(player){
+        players.push(player);
 
-        console.log(playerName + " was added");
+        console.log(player.name + " was added");
         console.log("They are player number " + players.length);
 
         return true;
@@ -107,75 +115,50 @@ exports.Game = function(isTechno = false) {
     };
 
     this.roll = function(roll){
-        console.log(players[currentPlayer] + " is the current player");
+        console.log(players[currentPlayer].name + " is the current player");
         console.log("They have rolled a " + roll);
 
-        if(inPenaltyBox[currentPlayer]){
+        if(players[currentPlayer].isOnPrison){
             if(roll % 2 != 0){
-                isGettingOutOfPenaltyBox = true;
+                players[currentPlayer].isOnPrison = false;
 
-                console.log(players[currentPlayer] + " is getting out of the penalty box");
-                places[currentPlayer] = places[currentPlayer] + roll;
-                if(places[currentPlayer] > 11){
-                    places[currentPlayer] = places[currentPlayer] - 12;
-                }
-
-                console.log(players[currentPlayer] + "'s new location is " + places[currentPlayer]);
-                console.log("The category is " + currentCategory());
-                askQuestion();
+                this.move(roll);
             }else{
-                console.log(players[currentPlayer] + " is not getting out of the penalty box");
-                isGettingOutOfPenaltyBox = false;
+                console.log(players[currentPlayer].name + " is not getting out of the penalty box");
             }
         }else{
-
-            places[currentPlayer] = places[currentPlayer] + roll;
-            if(places[currentPlayer] > 11){
-                places[currentPlayer] = places[currentPlayer] - 12;
-            }
-
-            console.log(players[currentPlayer] + "'s new location is " + places[currentPlayer]);
-            console.log("The category is " + currentCategory());
-            askQuestion();
+            this.move(roll)
         }
     };
 
+    this.move = function(roll) {
+        players[currentPlayer].place += roll;
+        if(players[currentPlayer].place > 11){
+            players[currentPlayer].place -= - 12;
+        }
+
+        console.log(players[currentPlayer].name + "'s new location is " + players[currentPlayer].place);
+        console.log("The category is " + currentCategory());
+        askQuestion();
+    }
+
     this.wasCorrectlyAnswered = function(){
-        if(inPenaltyBox[currentPlayer]){
-            if(isGettingOutOfPenaltyBox){
-                console.log('Answer was correct!!!!');
-                purses[currentPlayer] += 1;
-                console.log(players[currentPlayer] + " now has " +
-                    purses[currentPlayer]  + " Gold Coins.");
+        if(players[currentPlayer].isOnPrison) {
+            this.nextPlayer();
+            return true;
+        } else {
+            console.log('Answer was correct!!!!');
+            players[currentPlayer].gold += 1;
+            console.log(players[currentPlayer].name + " now has " +
+                players[currentPlayer].gold  + " Gold Coins.");
 
-                var winner = didPlayerWin();
-                currentPlayer += 1;
-                if(currentPlayer == players.length)
-                    currentPlayer = 0;
+            let winner = didPlayerWin();
 
-                return winner;
-            }else{
-                currentPlayer += 1;
-                if(currentPlayer == players.length)
-                    currentPlayer = 0;
-                return true;
+            if (!winner) {
+                console.log(players[currentPlayer].name + " has won !!!! ")
             }
 
-
-
-        }else{
-
-            console.log("Answer was correct!!!!");
-
-            purses[currentPlayer] += 1;
-            console.log(players[currentPlayer] + " now has " +
-                purses[currentPlayer]  + " Gold Coins.");
-
-            var winner = didPlayerWin();
-
-            currentPlayer += 1;
-            if(currentPlayer == players.length)
-                currentPlayer = 0;
+            this.nextPlayer();
 
             return winner;
         }
@@ -183,17 +166,24 @@ exports.Game = function(isTechno = false) {
 
     this.wrongAnswer = function(){
         console.log('Question was incorrectly answered');
-        console.log(players[currentPlayer] + " was sent to the penalty box");
-        inPenaltyBox[currentPlayer] = true;
+        console.log(players[currentPlayer].name + " was sent to the penalty box");
+        players[currentPlayer].isOnPrison = true;
 
-        currentPlayer += 1;
-        if(currentPlayer == players.length)
-            currentPlayer = 0;
+        this.nextPlayer();
+
         return true;
     };
+
+    this.nextPlayer = function() {
+        currentPlayer += 1;
+        if(currentPlayer === players.length)
+            currentPlayer = 0;
+
+    }
+
 };
 
-var notAWinner = false;
+let notAWinner = false;
 
 let input;
 
@@ -207,9 +197,16 @@ let isTechno = (input.toLowerCase() === 'techno')
 
 let game = new Game(isTechno);
 
-game.add('Chet');
-game.add('Pat');
-game.add('Sue');
+let names = ["Chet", "Pat", "Sue", "Pierre", "Paul", "Jacques", "Jean", "Tom"];
+let players = [];
+for (let i=0; i < 3 ; i++) {
+    let player = new Player(names[i]);
+    players.push(player);
+}
+
+players.forEach( (player) => {
+    game.add(player);
+})
 
 // if the game is playable
 if (game.isPlayable()) {
@@ -217,7 +214,7 @@ if (game.isPlayable()) {
 
         game.roll(Math.floor(Math.random()*6) + 1);
 
-        if(Math.floor(Math.random()*10) == 7){
+        if(Math.floor(Math.random()*10) === 7){
             notAWinner = game.wrongAnswer();
         }else{
             notAWinner = game.wasCorrectlyAnswered();
